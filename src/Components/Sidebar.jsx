@@ -1,43 +1,48 @@
 import { useBoard } from "../context/BoardContext";
 import ThemeToggle from "./ThemeToggle";
 
-export default function Sidebar({ onAddBoard }) {
+export default function Sidebar() {
   const { state, dispatch } = useBoard();
 
-  const handleSelectBoard = (id) => {
-    dispatch({ type: "SET_CURRENT_BOARD", payload: id });
-  };
-
   return (
-    <aside className="w-72 bg-white dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 p-6 flex flex-col justify-between">
+    <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col justify-between transition-colors">
+      {/* Boards */}
       <div>
-        <h2 className="text-lg font-bold mb-4">All Boards</h2>
+        <h2 className="px-6 pt-6 pb-2 text-xs font-bold tracking-widest text-gray-500 dark:text-gray-400">
+          ALL BOARDS ({state.boards.length})
+        </h2>
 
-        <ul className="flex flex-col gap-2">
+        <ul className="mt-4 space-y-1">
           {state.boards.map((board) => (
-            <li
-              key={board.id}
-              className={`cursor-pointer p-2 rounded ${
-                board.id === state.currentBoardId
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-              onClick={() => handleSelectBoard(board.id)}
-            >
-              {board.name}
+            <li key={board.id}>
+              <button
+                onClick={() =>
+                  dispatch({
+                    type: "SET_CURRENT_BOARD",
+                    payload: board.id,
+                  })
+                }
+                className={`w-full text-left px-6 py-3 rounded-r-full transition font-medium
+                  ${
+                    state.currentBoardId === board.id
+                      ? "bg-purple-600 text-white"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }
+                `}
+              >
+                {board.name}
+              </button>
             </li>
           ))}
         </ul>
-
-        <button
-          className="mt-4 w-full p-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
-          onClick={onAddBoard}
-        >
-          + Create New Board
-        </button>
       </div>
 
-      <ThemeToggle />
+      {/* Theme Toggle */}
+      <div className="p-4">
+        <div className="flex justify-center rounded-md bg-gray-100 dark:bg-gray-700 p-2">
+          <ThemeToggle />
+        </div>
+      </div>
     </aside>
   );
 }

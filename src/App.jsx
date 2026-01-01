@@ -1,48 +1,31 @@
-import { useState } from "react";
-import { BoardProvider } from "./context/BoardContext";
-import Sidebar from "./Components/Sidebar";
+import Header from "./Components/Header";
 import Board from "./Components/Board";
-import Modal from "./Components/Modal";
+import { useBoard } from "./context/BoardContext";
+import { useEffect } from "react";
 
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { state } = useBoard();
 
-  const handleAddTask = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  // Apply theme to <html>
+  useEffect(() => {
+    const root = document.documentElement;
+    if (state.theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [state.theme]);
 
   return (
-    <BoardProvider>
-      <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        {/* Sidebar */}
-        <Sidebar onAddBoard={handleAddTask} />
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
+      <Header />
 
-        {/* Main content */}
-        <main className="flex-1 flex flex-col">
-          {/* Header */}
-          <header className="p-6 border-b border-gray-300 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800 shadow-sm">
-            <h1 className="text-2xl font-bold">Kanban Board</h1>
-            <button
-              onClick={handleAddTask}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            >
-              + Add Task
-            </button>
-          </header>
-
-          {/* Board canvas */}
-          <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-900 p-6">
-            <Board />
-          </div>
-        </main>
-
-        {/* Modal */}
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          type="add-task"
-        />
-      </div>
-    </BoardProvider>
+      <main className="flex justify-center px-6 py-10">
+        <div className="w-full max-w-[1280px] rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors">
+          <Board />
+        </div>
+      </main>
+    </div>
   );
 }
 

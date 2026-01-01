@@ -5,10 +5,10 @@ export default function ThemeToggle() {
 
   return (
     <button
-      className="mt-4 p-2 w-full rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
       onClick={() => dispatch({ type: "TOGGLE_THEME" })}
+      className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-sm font-medium text-gray-800 dark:text-gray-100 transition"
     >
-      {state.theme === "light" ? "Dark Mode" : "Light Mode"}
+      {state.theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
     </button>
   );
 }
