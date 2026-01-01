@@ -4,10 +4,11 @@ import { loadState, saveState } from "../utils/localStorage";
 
 const BoardContext = createContext();
 
-const fallbackState = {
-  boards: data.boards || [],
-  currentBoardId: data.currentBoardId || data.boards[0]?.id,
-  theme: data.theme || "light",
+const defaultState = {
+  boards: data.boards,
+  currentBoardId: data.boards[0]?.id,
+  theme: "light",
+  isSidebarOpen: true,
 };
 
 function reducer(state, action) {
@@ -18,84 +19,11 @@ function reducer(state, action) {
     case "TOGGLE_THEME":
       return { ...state, theme: state.theme === "light" ? "dark" : "light" };
 
-    case "ADD_TASK": {
-      const { boardId, columnId, task } = action.payload;
-      return {
-        ...state,
-        boards: state.boards.map((board) =>
-          board.id !== boardId
-            ? board
-            : {
-                ...board,
-                columns: board.columns.map((col) =>
-                  col.id !== columnId
-                    ? col
-                    : { ...col, tasks: [...col.tasks, task] }
-                ),
-              }
-        ),
-      };
-    }
-
-    case "UPDATE_TASK": {
-      const { boardId, taskId, title, description, subtasks } = action.payload;
-      return {
-        ...state,
-        boards: state.boards.map((board) =>
-          board.id !== boardId
-            ? board
-            : {
-                ...board,
-                columns: board.columns.map((col) => ({
-                  ...col,
-                  tasks: col.tasks.map((task) =>
-                    task.id === taskId
-                      ? { ...task, title, description, subtasks }
-                      : task
-                  ),
-                })),
-              }
-        ),
-      };
-    }
-
-    case "UPDATE_TASK_STATUS": {
-      const { boardId, taskId, newStatus } = action.payload;
-
-      return {
-        ...state,
-        boards: state.boards.map((board) => {
-          if (board.id !== boardId) return board;
-
-          let movedTask = null;
-
-          const columns = board.columns.map((col) => {
-            const remainingTasks = col.tasks.filter((t) => {
-              if (t.id === taskId) {
-                movedTask = { ...t, status: newStatus };
-                return false;
-              }
-              return true;
-            });
-
-            return { ...col, tasks: remainingTasks };
-          });
-
-          return {
-            ...board,
-            columns: columns.map((col) =>
-              col.name === newStatus && movedTask
-                ? { ...col, tasks: [...col.tasks, movedTask] }
-                : col
-            ),
-          };
-        }),
-      };
-    }
+    case "TOGGLE_SIDEBAR":
+      return { ...state, isSidebarOpen: !state.isSidebarOpen };
 
     case "TOGGLE_SUBTASK": {
       const { boardId, taskId, subtaskId } = action.payload;
-
       return {
         ...state,
         boards: state.boards.map((board) =>
@@ -124,7 +52,7 @@ function reducer(state, action) {
     }
 
     case "MOVE_TASK": {
-      const { boardId, taskId, fromColumnId, toColumnId, oldIndex, newIndex } =
+      const { boardId, taskId, fromColumnId, toColumnId, newIndex } =
         action.payload;
 
       return {
@@ -132,21 +60,17 @@ function reducer(state, action) {
         boards: state.boards.map((board) => {
           if (board.id !== boardId) return board;
 
-          const columns = board.columns.map((col) => ({
-            ...col,
-            tasks: [...col.tasks],
+          const columns = board.columns.map((c) => ({
+            ...c,
+            tasks: [...c.tasks],
           }));
 
-          const sourceCol = columns.find((c) => c.id === fromColumnId);
-          const targetCol = columns.find((c) => c.id === toColumnId);
+          const fromCol = columns.find((c) => c.id === fromColumnId);
+          const toCol = columns.find((c) => c.id === toColumnId);
 
-          if (!sourceCol || !targetCol) return board;
-
-          const task = sourceCol.tasks[oldIndex];
-          if (!task) return board;
-
-          sourceCol.tasks.splice(oldIndex, 1);
-          targetCol.tasks.splice(newIndex, 0, task);
+          const taskIndex = fromCol.tasks.findIndex((t) => t.id === taskId);
+          const [task] = fromCol.tasks.splice(taskIndex, 1);
+          toCol.tasks.splice(newIndex, 0, task);
 
           return { ...board, columns };
         }),
@@ -161,8 +85,8 @@ function reducer(state, action) {
 export function BoardProvider({ children }) {
   const [state, dispatch] = useReducer(
     reducer,
-    fallbackState,
-    () => loadState() || fallbackState
+    defaultState,
+    () => loadState() || defaultState
   );
 
   useEffect(() => {
@@ -176,6 +100,4 @@ export function BoardProvider({ children }) {
   );
 }
 
-export function useBoard() {
-  return useContext(BoardContext);
-}
+export const useBoard = () => useContext(BoardContext);

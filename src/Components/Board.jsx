@@ -1,51 +1,42 @@
-import Column from "./Column";
-import { useBoard } from "../context/BoardContext";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useBoard } from "../context/BoardContext";
+import Column from "./Column";
 
 export default function Board() {
   const { state, dispatch } = useBoard();
 
-  const activeBoard = state.boards.find(
-    (board) => board.id === state.currentBoardId
+  const board = state.boards.find(
+    (b) => b.id === state.currentBoardId
   );
 
-  if (!activeBoard) {
-    return (
-      <div className="p-8 text-gray-500 text-center">No board selected</div>
-    );
-  }
+  if (!board) return null;
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const { columnId: sourceColId, index: oldIndex } = active.data.current;
-    const { columnId: targetColId, index: newIndex } = over.data.current;
+  const handleDragEnd = ({ active, over }) => {
+    if (!over) return;
 
     dispatch({
       type: "MOVE_TASK",
       payload: {
-        boardId: activeBoard.id,
+        boardId: board.id,
         taskId: active.id,
-        fromColumnId: sourceColId,
-        toColumnId: targetColId,
-        oldIndex,
-        newIndex,
+        fromColumnId: active.data.current.columnId,
+        toColumnId: over.data.current.columnId,
+        newIndex: over.data.current.index,
       },
     });
   };
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="flex gap-6 overflow-x-auto pb-4">
-        {activeBoard.columns.map((column) => (
+      <div className="flex gap-6 p-6 overflow-x-auto">
+        {board.columns.map((column) => (
           <SortableContext
             key={column.id}
-            items={column.tasks.map((task) => task.id)}
+            items={column.tasks.map((t) => t.id)}
             strategy={verticalListSortingStrategy}
           >
-            <Column column={column} boardId={activeBoard.id} />
+            <Column column={column} boardId={board.id} />
           </SortableContext>
         ))}
       </div>

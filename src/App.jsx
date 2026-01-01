@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { useBoard } from "./context/BoardContext";
-import Header from "./Components/Header";
-import Board from "./Components/Board";
+import { useBoard } from "../context/BoardContext";
+import Header from "./Header";
+import Sidebar from "./Sidebar";
+import Board from "./Board";
 
-function App() {
+export default function App() {
   const { state } = useBoard();
 
   useEffect(() => {
@@ -14,11 +15,12 @@ function App() {
   }, [state.theme]);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <Header />
-      <Board />
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+      <Sidebar />
+      <div className="flex-1">
+        <Header />
+        <Board />
+      </div>
     </div>
   );
 }
-
-export default App;
