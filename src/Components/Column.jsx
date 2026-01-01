@@ -1,11 +1,8 @@
-import Task from "./Task";
 import { useBoard } from "../context/BoardContext";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableTask } from "./SortableTask";
 
 export default function Column({ column, boardId }) {
-  const { state } = useBoard();
-
   return (
     <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 w-80 flex-shrink-0">
       <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-4">{column.name}</h3>
