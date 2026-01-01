@@ -3,7 +3,7 @@ import Header from "./Components/Header";
 import Sidebar from "./Components/Sidebar";
 import Board from "./Components/Board";
 import ThemeToggle from "./Components/ThemeToggle";
-import { useBoard } from "../context/BoardContext";
+import { useBoard } from "./context/BoardContext";
 
 export default function App() {
   const { state } = useBoard();
