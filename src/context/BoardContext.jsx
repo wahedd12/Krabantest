@@ -51,19 +51,52 @@ function reducer(state, action) {
       };
     }
 
+    case "UPDATE_TASK_STATUS": {
+      const { boardId, taskId, newStatus } = action.payload;
+      return {
+        ...state,
+        boards: state.boards.map((board) =>
+          board.id !== boardId
+            ? board
+            : {
+                ...board,
+                columns: board.columns.map((col) => {
+                  let taskToMove;
+                  const remainingTasks = col.tasks.filter((t) => {
+                    if (t.id === taskId) {
+                      taskToMove = { ...t, status: newStatus };
+                      return false;
+                    }
+                    return true;
+                  });
+                  if (col.name === newStatus && taskToMove) {
+                    return { ...col, tasks: [...remainingTasks, taskToMove] };
+                  }
+                  return { ...col, tasks: remainingTasks };
+                }),
+              }
+        ),
+      };
+    }
+
+    case "ADD_BOARD": {
+      const newBoard = {
+        id: Date.now().toString(),
+        name: "New Board",
+        columns: [],
+      };
+      return { ...state, boards: [...state.boards, newBoard], currentBoardId: newBoard.id };
+    }
+
     case "MOVE_TASK": {
-      const { boardId, taskId, fromColumnId, toColumnId, newIndex } =
-        action.payload;
+      const { boardId, taskId, fromColumnId, toColumnId, newIndex } = action.payload;
 
       return {
         ...state,
         boards: state.boards.map((board) => {
           if (board.id !== boardId) return board;
 
-          const columns = board.columns.map((c) => ({
-            ...c,
-            tasks: [...c.tasks],
-          }));
+          const columns = board.columns.map((c) => ({ ...c, tasks: [...c.tasks] }));
 
           const fromCol = columns.find((c) => c.id === fromColumnId);
           const toCol = columns.find((c) => c.id === toColumnId);
@@ -93,11 +126,7 @@ export function BoardProvider({ children }) {
     saveState(state);
   }, [state]);
 
-  return (
-    <BoardContext.Provider value={{ state, dispatch }}>
-      {children}
-    </BoardContext.Provider>
-  );
+  return <BoardContext.Provider value={{ state, dispatch }}>{children}</BoardContext.Provider>;
 }
 
 export const useBoard = () => useContext(BoardContext);

@@ -1,94 +1,72 @@
 import { useState } from "react";
 import { useBoard } from "../context/BoardContext";
 
-export default function Modal({ isOpen, onClose, type, boardId, task }) {
-  const { state, dispatch } = useBoard();
-
+export default function Modal({ isOpen, onClose, boardId, columnId, task }) {
+  const { dispatch } = useBoard();
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
   const [subtasks, setSubtasks] = useState(task?.subtasks || []);
 
   if (!isOpen) return null;
 
-  const handleSaveTask = () => {
-    if (!title.trim()) return;
+  const handleAddSubtask = () => setSubtasks([...subtasks, { id: Date.now().toString(), title: "", isCompleted: false }]);
 
+  const handleSubtaskChange = (index, value) => {
+    const newSubs = [...subtasks];
+    newSubs[index].title = value;
+    setSubtasks(newSubs);
+  };
+
+  const handleSave = () => {
     if (task) {
-      // Update existing task
       dispatch({
         type: "UPDATE_TASK",
         payload: { boardId, taskId: task.id, title, description, subtasks },
       });
     } else {
-      // Add new task
       dispatch({
         type: "ADD_TASK",
-        payload: {
-          boardId,
-          columnId: "To Do", // default column for new task
-          task: {
-            id: Date.now().toString(),
-            title,
-            description,
-            status: "To Do",
-            subtasks,
-          },
-        },
+        payload: { boardId, columnId, task: { id: Date.now().toString(), title, description, subtasks, status: columnId } },
       });
     }
-
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96">
-        <h3 className="text-lg font-semibold mb-4">{task ? "Edit Task" : "Add Task"}</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white dark:bg-gray-700 rounded-lg p-6 w-96">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{task ? "Edit Task" : "Add Task"}</h2>
 
         <input
-          type="text"
-          placeholder="Task Title"
+          className="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
+          placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 mb-3 border rounded dark:bg-gray-700 dark:border-gray-600"
         />
 
         <textarea
+          className="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-2 mb-3 border rounded dark:bg-gray-700 dark:border-gray-600"
         />
 
-        <h4 className="font-medium mb-2">Subtasks</h4>
-        {subtasks.map((s, i) => (
-          <input
-            key={s.id}
-            type="text"
-            value={s.title}
-            onChange={(e) => {
-              const newSubs = [...subtasks];
-              newSubs[i].title = e.target.value;
-              setSubtasks(newSubs);
-            }}
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-          />
-        ))}
+        <div className="space-y-2 mb-3">
+          {subtasks.map((sub, i) => (
+            <input
+              key={sub.id}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
+              placeholder={`Subtask ${i + 1}`}
+              value={sub.title}
+              onChange={(e) => handleSubtaskChange(i, e.target.value)}
+            />
+          ))}
+          <button onClick={handleAddSubtask} className="text-blue-500 text-sm">+ Add Subtask</button>
+        </div>
 
-        <button
-          onClick={() => setSubtasks([...subtasks, { id: Date.now().toString(), title: "", isCompleted: false }])}
-          className="text-blue-500 mb-4"
-        >
-          + Add Subtask
-        </button>
-
-        <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 rounded border">
-            Cancel
-          </button>
-          <button onClick={handleSaveTask} className="px-4 py-2 rounded bg-blue-500 text-white">
-            Save
-          </button>
+        <div className="flex justify-end space-x-2">
+          <button onClick={onClose} className="px-3 py-1 rounded-md bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100">Cancel</button>
+          <button onClick={handleSave} className="px-3 py-1 rounded-md bg-blue-500 text-white">Save</button>
         </div>
       </div>
     </div>

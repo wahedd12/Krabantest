@@ -1,42 +1,48 @@
+import Column from "./Column";
+import { useBoard } from "../context/BoardContext";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useBoard } from "../context/BoardContext";
-import Column from "./Column";
 
 export default function Board() {
   const { state, dispatch } = useBoard();
 
-  const board = state.boards.find(
-    (b) => b.id === state.currentBoardId
-  );
+  const activeBoard = state.boards.find(b => b.id === state.currentBoardId);
 
-  if (!board) return null;
+  if (!activeBoard) {
+    return <div className="p-8 text-gray-500 text-center">No board selected</div>;
+  }
 
-  const handleDragEnd = ({ active, over }) => {
-    if (!over) return;
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const { columnId: sourceColId, index: oldIndex } = active.data.current;
+    const { columnId: targetColId, index: newIndex } = over.data.current;
 
     dispatch({
       type: "MOVE_TASK",
       payload: {
-        boardId: board.id,
+        boardId: activeBoard.id,
         taskId: active.id,
-        fromColumnId: active.data.current.columnId,
-        toColumnId: over.data.current.columnId,
-        newIndex: over.data.current.index,
+        fromColumnId: sourceColId,
+        toColumnId: targetColId,
+        newIndex,
       },
     });
   };
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="flex gap-6 p-6 overflow-x-auto">
-        {board.columns.map((column) => (
+      <div className="flex gap-4 md:gap-6 lg:gap-8 overflow-x-auto">
+        {activeBoard.columns.map((col) => (
           <SortableContext
-            key={column.id}
-            items={column.tasks.map((t) => t.id)}
+            key={col.id}
+            items={col.tasks.map((task) => task.id)}
             strategy={verticalListSortingStrategy}
           >
-            <Column column={column} boardId={board.id} />
+            <div className="flex-shrink-0 w-64 md:w-72 lg:w-80">
+              <Column column={col} boardId={activeBoard.id} />
+            </div>
           </SortableContext>
         ))}
       </div>
