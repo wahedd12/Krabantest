@@ -33,16 +33,14 @@ export default function Board() {
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 md:gap-6 lg:gap-8 overflow-x-auto">
+      <div className="flex gap-4 md:gap-6 lg:gap-8 overflow-x-auto p-2 md:p-4 lg:p-6">
         {activeBoard.columns.map((col) => (
           <SortableContext
             key={col.id}
             items={col.tasks.map((task) => task.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="flex-shrink-0 w-64 md:w-72 lg:w-80">
-              <Column column={col} boardId={activeBoard.id} />
-            </div>
+            <Column column={col} boardId={activeBoard.id} />
           </SortableContext>
         ))}
       </div>
