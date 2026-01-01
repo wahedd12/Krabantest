@@ -4,7 +4,7 @@ import { loadState, saveState } from "../utils/localStorage";
 
 const BoardContext = createContext();
 
-const initialState = loadState() || {
+const fallbackState = {
   boards: data.boards || [],
   currentBoardId: data.currentBoardId || data.boards[0]?.id,
   theme: data.theme || "light",
@@ -61,34 +61,41 @@ function reducer(state, action) {
 
     case "UPDATE_TASK_STATUS": {
       const { boardId, taskId, newStatus } = action.payload;
+
       return {
         ...state,
-        boards: state.boards.map((board) =>
-          board.id !== boardId
-            ? board
-            : {
-                ...board,
-                columns: board.columns.map((col) => {
-                  let taskToMove;
-                  const filteredTasks = col.tasks.filter((t) => {
-                    if (t.id === taskId) {
-                      taskToMove = { ...t, status: newStatus };
-                      return false;
-                    }
-                    return true;
-                  });
-                  if (col.name === newStatus && taskToMove) {
-                    return { ...col, tasks: [...filteredTasks, taskToMove] };
-                  }
-                  return { ...col, tasks: filteredTasks };
-                }),
+        boards: state.boards.map((board) => {
+          if (board.id !== boardId) return board;
+
+          let movedTask = null;
+
+          const columns = board.columns.map((col) => {
+            const remainingTasks = col.tasks.filter((t) => {
+              if (t.id === taskId) {
+                movedTask = { ...t, status: newStatus };
+                return false;
               }
-        ),
+              return true;
+            });
+
+            return { ...col, tasks: remainingTasks };
+          });
+
+          return {
+            ...board,
+            columns: columns.map((col) =>
+              col.name === newStatus && movedTask
+                ? { ...col, tasks: [...col.tasks, movedTask] }
+                : col
+            ),
+          };
+        }),
       };
     }
 
     case "TOGGLE_SUBTASK": {
       const { boardId, taskId, subtaskId } = action.payload;
+
       return {
         ...state,
         boards: state.boards.map((board) =>
@@ -125,20 +132,20 @@ function reducer(state, action) {
         boards: state.boards.map((board) => {
           if (board.id !== boardId) return board;
 
-          // Clone columns to avoid mutating original
-          const columns = board.columns.map((col) => ({ ...col }));
+          const columns = board.columns.map((col) => ({
+            ...col,
+            tasks: [...col.tasks],
+          }));
 
-          // Find source and target columns
           const sourceCol = columns.find((c) => c.id === fromColumnId);
           const targetCol = columns.find((c) => c.id === toColumnId);
+
           if (!sourceCol || !targetCol) return board;
 
-          // Remove task from source column
-          const taskIndex = sourceCol.tasks.findIndex((t) => t.id === taskId);
-          if (taskIndex === -1) return board;
-          const [task] = sourceCol.tasks.splice(taskIndex, 1);
+          const task = sourceCol.tasks[oldIndex];
+          if (!task) return board;
 
-          // Insert task into target column at newIndex
+          sourceCol.tasks.splice(oldIndex, 1);
           targetCol.tasks.splice(newIndex, 0, task);
 
           return { ...board, columns };
@@ -152,9 +159,12 @@ function reducer(state, action) {
 }
 
 export function BoardProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(
+    reducer,
+    fallbackState,
+    () => loadState() || fallbackState
+  );
 
-  // Persist state to localStorage
   useEffect(() => {
     saveState(state);
   }, [state]);
