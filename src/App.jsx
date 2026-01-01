@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useBoard } from "../context/BoardContext";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
-import Board from "./Board";
+import Board from "./Components/Board";
+import Sidebar from "./Components/Sidebar";
+import Header from "./Components/Header";
 
 export default function App() {
   const { state } = useBoard();
