@@ -1,4 +1,4 @@
-import { useBoard } from "../context/BoardContext";
+import { useBoard } from "./context/BoardContext";
 
 export default function ThemeToggle() {
   const { state, dispatch } = useBoard();

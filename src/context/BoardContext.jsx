@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
-import data from "../data/data.json";
+import data from "./data/data.json";
 import { loadState, saveState } from "../utils/localStorage";
 
 const BoardContext = createContext();

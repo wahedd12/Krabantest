@@ -1,4 +1,4 @@
-import { useBoard } from "../context/BoardContext";
+import { useBoard } from "./context/BoardContext";
 
 export default function Task({ task, boardId, columnId, index }) {
   const { dispatch } = useBoard();

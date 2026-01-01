@@ -1,5 +1,5 @@
 // src/Components/Subtask.jsx
-import { useBoard } from "../context/BoardContext";
+import { useBoard } from "./context/BoardContext";
 
 export default function Subtask({ subtask, taskId, boardId }) {
   const { dispatch } = useBoard();
