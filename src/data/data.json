@@ -1,0 +1,103 @@
+{
+  "boards": [
+    {
+      "id": "board-1",
+      "name": "Product Launch",
+      "columns": [
+        {
+          "id": "col-1",
+          "name": "To Do",
+          "tasks": [
+            {
+              "id": "task-1",
+              "title": "Design homepage",
+              "description": "Create the landing page design in Figma",
+              "status": "To Do",
+              "subtasks": [
+                { "id": "sub-1", "title": "Wireframe layout", "isCompleted": true },
+                { "id": "sub-2", "title": "Pick color scheme", "isCompleted": false },
+                { "id": "sub-3", "title": "Add hero illustration", "isCompleted": false }
+              ]
+            },
+            {
+              "id": "task-2",
+              "title": "Set up analytics",
+              "description": "Configure Google Analytics for the website",
+              "status": "To Do",
+              "subtasks": [
+                { "id": "sub-4", "title": "Add GA script", "isCompleted": false },
+                { "id": "sub-5", "title": "Test tracking events", "isCompleted": false }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "col-2",
+          "name": "Doing",
+          "tasks": [
+            {
+              "id": "task-3",
+              "title": "Write marketing copy",
+              "description": "Prepare copy for emails and social posts",
+              "status": "Doing",
+              "subtasks": [
+                { "id": "sub-6", "title": "Email drafts", "isCompleted": true },
+                { "id": "sub-7", "title": "Social captions", "isCompleted": false }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "col-3",
+          "name": "Done",
+          "tasks": [
+            {
+              "id": "task-4",
+              "title": "Set up Git repository",
+              "description": "Initialize project repo on GitHub",
+              "status": "Done",
+              "subtasks": [
+                { "id": "sub-8", "title": "Create repo", "isCompleted": true },
+                { "id": "sub-9", "title": "Push initial commit", "isCompleted": true }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "board-2",
+      "name": "Website Redesign",
+      "columns": [
+        {
+          "id": "col-4",
+          "name": "To Do",
+          "tasks": [
+            {
+              "id": "task-5",
+              "title": "Audit current website",
+              "description": "Check current site for UX issues",
+              "status": "To Do",
+              "subtasks": [
+                { "id": "sub-10", "title": "List all pages", "isCompleted": false },
+                { "id": "sub-11", "title": "Identify broken links", "isCompleted": false }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "col-5",
+          "name": "Doing",
+          "tasks": []
+        },
+        {
+          "id": "col-6",
+          "name": "Done",
+          "tasks": []
+        }
+      ]
+    }
+  ],
+  "currentBoardId": "board-1",
+  "theme": "light"
+}
