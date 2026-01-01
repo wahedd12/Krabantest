@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useBoard } from "../context/BoardContext";
+import { useBoard } from "./context/BoardContext";
 import Board from "./Components/Board";
 import Sidebar from "./Components/Sidebar";
 import Header from "./Components/Header";
