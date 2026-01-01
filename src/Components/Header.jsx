@@ -1,8 +1,15 @@
+import ThemeToggle from "./ThemeToggle";
+
 export default function Header() {
   return (
-    <header className="w-[1110px] h-[120px] mx-auto my-8 p-6 border-2 border-purple-500 bg-purple-700 text-white rounded-lg">
-      <h1 className="text-2xl font-bold">Kanban Board</h1>
-      <p className="text-sm opacity-80">Manage your tasks visually</p>
+    <header className="flex items-center justify-between px-6 py-4
+                       bg-white dark:bg-gray-800
+                       border-b border-gray-200 dark:border-gray-700">
+      <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+        Kanban
+      </h1>
+
+      <ThemeToggle />
     </header>
-  )
+  );
 }

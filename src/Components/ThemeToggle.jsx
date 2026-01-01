@@ -6,9 +6,12 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => dispatch({ type: "TOGGLE_THEME" })}
-      className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-sm font-medium text-gray-800 dark:text-gray-100 transition"
+      className="flex items-center gap-2 rounded-lg px-3 py-2
+                 bg-gray-200 dark:bg-gray-700
+                 text-gray-800 dark:text-gray-100
+                 hover:bg-gray-300 dark:hover:bg-gray-600"
     >
-      {state.theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+      {state.theme === "dark" ? "🌙 Dark" : "☀️ Light"}
     </button>
   );
 }
