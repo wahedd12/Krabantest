@@ -22,6 +22,39 @@ function reducer(state, action) {
     case "TOGGLE_SIDEBAR":
       return { ...state, isSidebarOpen: !state.isSidebarOpen };
 
+    case "ADD_BOARD": {
+      const newBoard = {
+        id: crypto.randomUUID(),
+        name: "New Board",
+        columns: [],
+      };
+      return {
+        ...state,
+        boards: [...state.boards, newBoard],
+        currentBoardId: newBoard.id,
+      };
+    }
+
+    case "EDIT_BOARD": {
+      const { boardId, newName } = action.payload;
+      return {
+        ...state,
+        boards: state.boards.map((board) =>
+          board.id === boardId ? { ...board, name: newName } : board
+        ),
+      };
+    }
+
+    case "DELETE_BOARD": {
+      const { boardId } = action.payload;
+      const filteredBoards = state.boards.filter((board) => board.id !== boardId);
+      const newCurrentBoardId =
+        state.currentBoardId === boardId && filteredBoards.length > 0
+          ? filteredBoards[0].id
+          : state.currentBoardId;
+      return { ...state, boards: filteredBoards, currentBoardId: newCurrentBoardId };
+    }
+
     case "TOGGLE_SUBTASK": {
       const { boardId, taskId, subtaskId } = action.payload;
       return {
@@ -51,43 +84,6 @@ function reducer(state, action) {
       };
     }
 
-    case "UPDATE_TASK_STATUS": {
-      const { boardId, taskId, newStatus } = action.payload;
-      return {
-        ...state,
-        boards: state.boards.map((board) =>
-          board.id !== boardId
-            ? board
-            : {
-                ...board,
-                columns: board.columns.map((col) => {
-                  let taskToMove;
-                  const remainingTasks = col.tasks.filter((t) => {
-                    if (t.id === taskId) {
-                      taskToMove = { ...t, status: newStatus };
-                      return false;
-                    }
-                    return true;
-                  });
-                  if (col.name === newStatus && taskToMove) {
-                    return { ...col, tasks: [...remainingTasks, taskToMove] };
-                  }
-                  return { ...col, tasks: remainingTasks };
-                }),
-              }
-        ),
-      };
-    }
-
-    case "ADD_BOARD": {
-      const newBoard = {
-        id: Date.now().toString(),
-        name: "New Board",
-        columns: [],
-      };
-      return { ...state, boards: [...state.boards, newBoard], currentBoardId: newBoard.id };
-    }
-
     case "MOVE_TASK": {
       const { boardId, taskId, fromColumnId, toColumnId, newIndex } = action.payload;
 
@@ -100,6 +96,8 @@ function reducer(state, action) {
 
           const fromCol = columns.find((c) => c.id === fromColumnId);
           const toCol = columns.find((c) => c.id === toColumnId);
+
+          if (!fromCol || !toCol) return board;
 
           const taskIndex = fromCol.tasks.findIndex((t) => t.id === taskId);
           const [task] = fromCol.tasks.splice(taskIndex, 1);

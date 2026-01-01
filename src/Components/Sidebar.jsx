@@ -1,5 +1,4 @@
 import { useBoard } from "../context/BoardContext";
-import ThemeToggle from "./ThemeToggle";
 
 export default function Sidebar() {
   const { state, dispatch } = useBoard();
@@ -15,7 +14,7 @@ export default function Sidebar() {
       </button>
 
       {/* Sidebar */}
-      <aside
+      <div
         className={`
           bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
           fixed inset-y-0 left-0 z-40
@@ -27,18 +26,51 @@ export default function Sidebar() {
       >
         <div className="p-4">
           <h2 className="text-lg font-bold mb-6">All Boards</h2>
-
           <ul className="space-y-3">
             {state.boards.map((board) => (
               <li
                 key={board.id}
-                className={`
-                  cursor-pointer p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700
-                  ${state.currentBoardId === board.id ? "bg-blue-200 dark:bg-blue-600 font-bold" : ""}
-                `}
-                onClick={() => dispatch({ type: "SET_CURRENT_BOARD", payload: board.id })}
+                className={`flex justify-between items-center cursor-pointer p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 ${
+                  state.currentBoardId === board.id
+                    ? "bg-blue-200 dark:bg-blue-600 font-bold"
+                    : ""
+                }`}
+                onClick={() =>
+                  dispatch({ type: "SET_CURRENT_BOARD", payload: board.id })
+                }
               >
-                {board.name}
+                <span>{board.name}</span>
+
+                {/* Edit & Delete */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newName = prompt("Enter new board name:", board.name);
+                      if (newName) {
+                        dispatch({
+                          type: "EDIT_BOARD",
+                          payload: { boardId: board.id, newName },
+                        });
+                      }
+                    }}
+                    className="text-sm text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+                  >
+                    ✏️
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm("Are you sure you want to delete this board?")) {
+                        dispatch({ type: "DELETE_BOARD", payload: { boardId: board.id } });
+                      }
+                    }}
+                    className="text-sm text-red-500 hover:text-red-700"
+                  >
+                    🗑️
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -51,17 +83,11 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* Bottom toggles */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <ThemeToggle />
-          <button
-            onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-            className="mt-3 w-full py-2 px-4 rounded-md bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-400 dark:hover:bg-gray-600"
-          >
-            Hide Sidebar
-          </button>
+        {/* Sidebar bottom placeholder for styling or mobile toggle if needed */}
+        <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          Kanban App
         </div>
-      </aside>
+      </div>
     </>
   );
 }
