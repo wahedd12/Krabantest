@@ -1,5 +1,5 @@
 import ThemeToggle from "./ThemeToggle";
-import { useBoard } from "./context/BoardContext";
+import { useBoard } from "../context/BoardContext";
 
 export default function Header() {
   const { dispatch } = useBoard();

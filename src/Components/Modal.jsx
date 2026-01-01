@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBoard } from "./context/BoardContext";
+import { useBoard } from "../context/BoardContext";
 
 export default function Modal({ isOpen, onClose, boardId, columnId, task }) {
   const { dispatch } = useBoard();

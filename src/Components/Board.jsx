@@ -1,5 +1,5 @@
 import Column from "./Column";
-import { useBoard } from "./context/BoardContext";
+import { useBoard } from "../context/BoardContext";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 

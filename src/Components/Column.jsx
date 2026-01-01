@@ -1,5 +1,5 @@
 import Task from "./Task";
-import { useBoard } from "./context/BoardContext";
+import { useBoard } from "../context/BoardContext";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableTask } from "./SortableTask";
 
