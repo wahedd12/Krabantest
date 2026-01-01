@@ -6,15 +6,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile / Tablet open button */}
-      <button
-        className="md:hidden p-2 m-2 rounded-md
-                   bg-gray-200 dark:bg-gray-700"
-        onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-      >
-        ☰
-      </button>
-
       {/* Sidebar */}
       <aside
         className={`
@@ -27,13 +18,13 @@ export default function Sidebar() {
           flex flex-col
         `}
       >
-        {/* Top content */}
-        <div className="p-6 flex-1">
-          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4">
-            ALL BOARDS ({state.boards.length})
+        {/* Top */}
+        <div className="p-4">
+          <h2 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">
+            All Boards
           </h2>
 
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {state.boards.map((board) => (
               <li
                 key={board.id}
@@ -43,14 +34,12 @@ export default function Sidebar() {
                     payload: board.id,
                   })
                 }
-                className={`
-                  cursor-pointer px-4 py-2 rounded-r-full
+                className={`cursor-pointer p-2 rounded-md
                   ${
                     state.currentBoardId === board.id
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }
-                `}
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }`}
               >
                 {board.name}
               </li>
@@ -58,15 +47,15 @@ export default function Sidebar() {
           </ul>
 
           <button
-            className="mt-6 text-blue-600 font-semibold"
             onClick={() => dispatch({ type: "ADD_BOARD" })}
+            className="mt-6 w-full py-2 rounded-md bg-purple-600 text-white"
           >
             + Create New Board
           </button>
         </div>
 
-        {/* Bottom controls (assignment requirement) */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+        {/* Bottom controls */}
+        <div className="mt-auto p-4 space-y-4">
           <ThemeToggle />
 
           <button
